@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: news-service
+spec:
+  selector:
+    app: news-service
+  type: NodePort
+  ports:
+    - name: http
+      port: 8082
+      nodePort: 31002
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-service
+spec:
+  selector:
+    matchLabels:
+      app: news-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: news-service
+    spec:
+      containers:
+        - name: server
+          image: prometheusua/news-service:latest
+          ports:
+            - name: http
+              containerPort: 8082
+          env:
+            - name: POSTGRESQL_FULLHOST
+              value: postgres-news
+            - name: POSTGRESQL_DB
+              value: news
+            - name: POSTGRESQL_USER
+              value: postgres
+            - name: POSTGRESQL_PASSWORD
+              value: password
+            - name: SECRET_KEY
+              value: 0989E64CD1B7FB8B4CFB50FF03CB8962BB5A6AB301403F3BE42FC36499F48CA3
+            - name: ACCESS_TOKEN_LIFE_millis
+              value: '600000'
+            - name: REFRESH_TOKEN_LIFE_millis
+              value: '1800000'
+            - name: AUTH_URL
+              value: http://identity-service:8080

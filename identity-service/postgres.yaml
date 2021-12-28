@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-identity
+  labels:
+    app: postgres-identity
+    group: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-identity
+  template:
+    metadata:
+      labels:
+        app: postgres-identity
+        type: db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:latest
+          imagePullPolicy: ""
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_DB
+              value: accounts
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-identity
+spec:
+  selector:
+    app: postgres-identity
+  ports:
+    - protocol: TCP
+      name: "5432"
+      port: 5432
+      targetPort: 5432

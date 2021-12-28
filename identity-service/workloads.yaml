@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-service
+spec:
+  selector:
+    matchLabels:
+      app: identity-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: identity-service
+    spec:
+      containers:
+        - name: identity-service
+          image: prometheusua/identity-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: POSTGRESQL_FULLHOST
+              value: postgres-identity
+            - name: POSTGRESQL_DB
+              value: accounts
+            - name: POSTGRESQL_USER
+              value: postgres
+            - name: POSTGRESQL_PASSWORD
+              value: password
+            - name: SECRET_KEY
+              value: 0989E64CD1B7FB8B4CFB50FF03CB8962BB5A6AB301403F3BE42FC36499F48CA3
+            - name: ACCESS_TOKEN_LIFE_millis
+              value: '600000'
+            - name: REFRESH_TOKEN_LIFE_millis
+              value: '1800000'
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-service
+spec:
+  selector:
+    app: identity-service
+  type: NodePort
+  ports:
+    - name: http
+      port: 8080
+      nodePort: 31000
