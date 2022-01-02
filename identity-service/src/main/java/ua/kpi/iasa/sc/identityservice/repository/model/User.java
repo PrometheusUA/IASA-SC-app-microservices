@@ -47,7 +47,7 @@ public final class User {
 
     public User(String password_hashed, String email, String name, String surname, String patronymic, boolean blocked, boolean deleted, boolean confirmed, String docPhoto, Timestamp createdOn, boolean emailConfirmed) {
         this.password_hashed = password_hashed;
-        this.email = email;
+        setEmail(email);
         this.name = name;
         this.surname = surname;
         this.patronymic = patronymic;
@@ -61,7 +61,7 @@ public final class User {
 
     public User(UserDTO userDTO, Role studrole) {
         this.password_hashed = userDTO.getPassword();
-        this.email = userDTO.getEmail();
+        setEmail(userDTO.getEmail());
         this.name = userDTO.getName();
         this.surname = userDTO.getSurname();
         this.patronymic = userDTO.getPatronymic();
@@ -76,7 +76,7 @@ public final class User {
 
     public User(UserDTO userDTO) {
         this.password_hashed = userDTO.getPassword();
-        this.email = userDTO.getEmail();
+        setEmail(userDTO.getEmail());
         this.name = userDTO.getName();
         this.surname = userDTO.getSurname();
         this.patronymic = userDTO.getPatronymic();
@@ -126,6 +126,10 @@ public final class User {
     }
 
     public void setEmail(String email) {
+        String emailRegex = "^(?=.{1,64}@)[\\p{L}0-9_-]+(\\.[\\p{L}0-9_-]+)*@"
+                + "[^-][\\p{L}0-9-]+(\\.[\\p{L}0-9-]+)*(\\.[\\p{L}]{2,})$";
+        if(!email.matches(emailRegex))
+            throw new IllegalArgumentException("email is in inappropriate format");
         this.email = email;
     }
 

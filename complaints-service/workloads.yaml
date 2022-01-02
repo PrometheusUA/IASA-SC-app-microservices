@@ -39,15 +39,20 @@ spec:
             - name: POSTGRESQL_DB
               value: complaints
             - name: POSTGRESQL_USER
-              value: postgres
+              valueFrom:
+                secretKeyRef:
+                  name: complaints-secret
+                  key: db-username
             - name: POSTGRESQL_PASSWORD
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  name: complaints-secret
+                  key: db-password
             - name: SECRET_KEY
-              value: 0989E64CD1B7FB8B4CFB50FF03CB8962BB5A6AB301403F3BE42FC36499F48CA3
-            - name: ACCESS_TOKEN_LIFE_millis
-              value: '600000'
-            - name: REFRESH_TOKEN_LIFE_millis
-              value: '1800000'
+              valueFrom:
+                secretKeyRef:
+                  name: identity-secret
+                  key: jwt-secret-key
             - name: AUTH_URL
               value: http://identity-service:8080
 ---
