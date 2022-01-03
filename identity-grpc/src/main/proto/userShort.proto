@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package ua.kpi.iasa.sc.grpc;
+
+option java_multiple_files = true;
+option java_package = "ua.kpi.iasa.sc.grpc";
+
+service UserGRPCService {
+  rpc getByIds(UserGRPCRequest) returns (UserGRPCResponse);
+}
+
+message UserGRPCRequest {
+  repeated int64 ids = 1;
+}
+
+message UserShortBackDTO {
+  int64 id = 1;
+  string fullname = 2;
+}
+
+message UserGRPCResponse {
+  repeated UserShortBackDTO user = 1;
+}

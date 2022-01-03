@@ -2,6 +2,7 @@ package ua.kpi.iasa.sc.newsservice.api.dto;
 
 import lombok.Data;
 import net.minidev.json.JSONObject;
+import ua.kpi.iasa.sc.grpc.UserShortBackDTO;
 import ua.kpi.iasa.sc.newsservice.repository.model.News;
 
 import java.sql.Timestamp;

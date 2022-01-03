@@ -77,8 +77,8 @@ public final class UserController {
     @PostMapping("/byids")
     public ResponseEntity<?> indexById(@RequestBody List<Long> ids){
         List<User> validUsers = userService.fetchByIdIn(ids);
-        List<UserBackDTO> usersToSend = new ArrayList<>();
-        validUsers.forEach(user -> { usersToSend.add(new UserBackDTO(user));});
+        List<UserBackShortDTO> usersToSend = new ArrayList<>();
+        validUsers.forEach(user -> { usersToSend.add(new UserBackShortDTO(user));});
         return ResponseEntity.ok(usersToSend);
     }
 

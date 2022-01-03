@@ -1,6 +1,8 @@
 package ua.kpi.iasa.sc.newsservice.api;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -14,6 +16,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import ua.kpi.iasa.sc.grpc.UserGRPCRequest;
+import ua.kpi.iasa.sc.grpc.UserGRPCResponse;
+import ua.kpi.iasa.sc.grpc.UserGRPCServiceGrpc;
+import ua.kpi.iasa.sc.grpc.UserShortBackDTO;
 import ua.kpi.iasa.sc.newsservice.api.dto.NewsBackDTO;
 import ua.kpi.iasa.sc.newsservice.api.dto.NewsDTO;
 import ua.kpi.iasa.sc.newsservice.repository.model.News;
@@ -63,43 +69,64 @@ public class NewsController {
                 }).collect(Collectors.toList());
             }
 
-            Map<Integer, JSONObject> authors = new HashMap<>();
+//            Map<Integer, JSONObject> authors = new HashMap<>();
+//
+//            HttpPost httppost = new HttpPost(System.getenv("AUTH_URL") + "/identity/byids/unauthorized");
+//            httppost.setHeader("User-Agent", "Mozilla/9.0");
+//
+//            StringEntity requestEntity = new StringEntity(
+//                    idsOfAuthors.toString(),
+//                    ContentType.APPLICATION_JSON);
+//
+//            httppost.setEntity(requestEntity);
+//
+//            HttpResponse httpResponse = httpclient.execute(httppost);
+//            HttpEntity entity = httpResponse.getEntity();
+//            if (entity != null) {
+//                InputStream instream = entity.getContent();
+//                BufferedReader in = new BufferedReader(new InputStreamReader(instream));
+//                String inputLine;
+//                StringBuffer response = new StringBuffer();
+//
+//                while ((inputLine = in.readLine()) != null) {
+//                    response.append(inputLine);
+//                }
+//                in.close();
+//
+//                JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
+//                JSONArray res = (JSONArray) parser.parse(response.toString());
+//                for(int i = 0; i < res.size(); i++){
+//                    JSONObject user = (JSONObject) res.get(i);
+//                    authors.put((Integer) user.get("id"), user);
+//                }
+//            }
 
-            HttpPost httppost = new HttpPost(System.getenv("AUTH_URL") + "/identity/byids/unauthorized");
-            httppost.setHeader("User-Agent", "Mozilla/9.0");
+            ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8083)
+                    .usePlaintext()
+                    .build();
 
-            StringEntity requestEntity = new StringEntity(
-                    idsOfAuthors.toString(),
-                    ContentType.APPLICATION_JSON);
+            UserGRPCServiceGrpc.UserGRPCServiceBlockingStub stub
+                    = UserGRPCServiceGrpc.newBlockingStub(channel);
 
-            httppost.setEntity(requestEntity);
+            UserGRPCRequest.Builder builder = UserGRPCRequest.newBuilder().addAllIds(idsOfAuthors);
 
-            HttpResponse httpResponse = httpclient.execute(httppost);
-            HttpEntity entity = httpResponse.getEntity();
-            if (entity != null) {
-                InputStream instream = entity.getContent();
-                BufferedReader in = new BufferedReader(new InputStreamReader(instream));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-                JSONArray res = (JSONArray) parser.parse(response.toString());
-                for(int i = 0; i < res.size(); i++){
-                    JSONObject user = (JSONObject) res.get(i);
-                    authors.put((Integer) user.get("id"), user);
-                }
+            UserGRPCResponse usersResponse = stub.getByIds(builder.build());
+            Map<Long, JSONObject> authors = new HashMap<>();
+            List<UserShortBackDTO> authorsList = usersResponse.getUserList();
+            for(int i = 0; i < authorsList.size(); i++){
+                UserShortBackDTO user = authorsList.get(i);
+                Map<String, Object> props = new HashMap<>();
+                props.put("id", user.getId());
+                props.put("fullname", user.getFullname());
+                authors.put(user.getId(), new JSONObject(props));
             }
+            channel.shutdown();
 
             return ResponseEntity.ok(newsResList.stream().map(news -> {
-                if(news.getCreatedBy() == null || !authors.containsKey(news.getCreatedBy().intValue()))
+                if(news.getCreatedBy() == null || !authors.containsKey(news.getCreatedBy().longValue()))
                     return new NewsBackDTO(news);
                 else{
-                    return new NewsBackDTO(news, authors.get(news.getCreatedBy().intValue()));
+                    return new NewsBackDTO(news, authors.get(news.getCreatedBy().longValue()));
                 }
             }).collect(Collectors.toList()));
         }
@@ -138,6 +165,10 @@ public class NewsController {
                     JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
                     JSONArray res = (JSONArray) parser.parse(response.toString());
                     JSONObject author = (JSONObject) res.get(0);
+//                    UserShortBackDTO authorBack = UserShortBackDTO.newBuilder()
+//                            .setId((long) author.get("id"))
+//                            .setFullname(author.getAsString("fullname"))
+//                            .build();
                     return ResponseEntity.ok(new NewsBackDTO(foundNews, author));
                 }
             }
