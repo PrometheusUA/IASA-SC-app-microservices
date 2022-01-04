@@ -53,6 +53,8 @@ spec:
                 secretKeyRef:
                   name: identity-secret
                   key: jwt-secret-key
-            - name: AUTH_URL
-              value: http://identity-service:8080
+            - name: AUTH_HOST
+              value: identity-service
+            - name: AUTH_GRPC_PORT
+              value: '8083'
 ---

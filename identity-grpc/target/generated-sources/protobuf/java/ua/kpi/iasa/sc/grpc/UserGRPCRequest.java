@@ -15,7 +15,7 @@ public  final class UserGRPCRequest extends
     super(builder);
   }
   private UserGRPCRequest() {
-    ids_ = java.util.Collections.emptyList();
+    id_ = 0L;
   }
 
   @java.lang.Override
@@ -44,24 +44,8 @@ public  final class UserGRPCRequest extends
             break;
           }
           case 8: {
-            if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-              ids_ = new java.util.ArrayList<java.lang.Long>();
-              mutable_bitField0_ |= 0x00000001;
-            }
-            ids_.add(input.readInt64());
-            break;
-          }
-          case 10: {
-            int length = input.readRawVarint32();
-            int limit = input.pushLimit(length);
-            if (!((mutable_bitField0_ & 0x00000001) == 0x00000001) && input.getBytesUntilLimit() > 0) {
-              ids_ = new java.util.ArrayList<java.lang.Long>();
-              mutable_bitField0_ |= 0x00000001;
-            }
-            while (input.getBytesUntilLimit() > 0) {
-              ids_.add(input.readInt64());
-            }
-            input.popLimit(limit);
+
+            id_ = input.readInt64();
             break;
           }
         }
@@ -72,9 +56,6 @@ public  final class UserGRPCRequest extends
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-        ids_ = java.util.Collections.unmodifiableList(ids_);
-      }
       makeExtensionsImmutable();
     }
   }
@@ -90,28 +71,14 @@ public  final class UserGRPCRequest extends
             ua.kpi.iasa.sc.grpc.UserGRPCRequest.class, ua.kpi.iasa.sc.grpc.UserGRPCRequest.Builder.class);
   }
 
-  public static final int IDS_FIELD_NUMBER = 1;
-  private java.util.List<java.lang.Long> ids_;
+  public static final int ID_FIELD_NUMBER = 1;
+  private long id_;
   /**
-   * <code>repeated int64 ids = 1;</code>
+   * <code>int64 id = 1;</code>
    */
-  public java.util.List<java.lang.Long>
-      getIdsList() {
-    return ids_;
+  public long getId() {
+    return id_;
   }
-  /**
-   * <code>repeated int64 ids = 1;</code>
-   */
-  public int getIdsCount() {
-    return ids_.size();
-  }
-  /**
-   * <code>repeated int64 ids = 1;</code>
-   */
-  public long getIds(int index) {
-    return ids_.get(index);
-  }
-  private int idsMemoizedSerializedSize = -1;
 
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
@@ -125,13 +92,8 @@ public  final class UserGRPCRequest extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    getSerializedSize();
-    if (getIdsList().size() > 0) {
-      output.writeUInt32NoTag(10);
-      output.writeUInt32NoTag(idsMemoizedSerializedSize);
-    }
-    for (int i = 0; i < ids_.size(); i++) {
-      output.writeInt64NoTag(ids_.get(i));
+    if (id_ != 0L) {
+      output.writeInt64(1, id_);
     }
   }
 
@@ -140,19 +102,9 @@ public  final class UserGRPCRequest extends
     if (size != -1) return size;
 
     size = 0;
-    {
-      int dataSize = 0;
-      for (int i = 0; i < ids_.size(); i++) {
-        dataSize += com.google.protobuf.CodedOutputStream
-          .computeInt64SizeNoTag(ids_.get(i));
-      }
-      size += dataSize;
-      if (!getIdsList().isEmpty()) {
-        size += 1;
-        size += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(dataSize);
-      }
-      idsMemoizedSerializedSize = dataSize;
+    if (id_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(1, id_);
     }
     memoizedSize = size;
     return size;
@@ -170,8 +122,8 @@ public  final class UserGRPCRequest extends
     ua.kpi.iasa.sc.grpc.UserGRPCRequest other = (ua.kpi.iasa.sc.grpc.UserGRPCRequest) obj;
 
     boolean result = true;
-    result = result && getIdsList()
-        .equals(other.getIdsList());
+    result = result && (getId()
+        == other.getId());
     return result;
   }
 
@@ -182,10 +134,9 @@ public  final class UserGRPCRequest extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    if (getIdsCount() > 0) {
-      hash = (37 * hash) + IDS_FIELD_NUMBER;
-      hash = (53 * hash) + getIdsList().hashCode();
-    }
+    hash = (37 * hash) + ID_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getId());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -315,8 +266,8 @@ public  final class UserGRPCRequest extends
     }
     public Builder clear() {
       super.clear();
-      ids_ = java.util.Collections.emptyList();
-      bitField0_ = (bitField0_ & ~0x00000001);
+      id_ = 0L;
+
       return this;
     }
 
@@ -339,12 +290,7 @@ public  final class UserGRPCRequest extends
 
     public ua.kpi.iasa.sc.grpc.UserGRPCRequest buildPartial() {
       ua.kpi.iasa.sc.grpc.UserGRPCRequest result = new ua.kpi.iasa.sc.grpc.UserGRPCRequest(this);
-      int from_bitField0_ = bitField0_;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        ids_ = java.util.Collections.unmodifiableList(ids_);
-        bitField0_ = (bitField0_ & ~0x00000001);
-      }
-      result.ids_ = ids_;
+      result.id_ = id_;
       onBuilt();
       return result;
     }
@@ -386,15 +332,8 @@ public  final class UserGRPCRequest extends
 
     public Builder mergeFrom(ua.kpi.iasa.sc.grpc.UserGRPCRequest other) {
       if (other == ua.kpi.iasa.sc.grpc.UserGRPCRequest.getDefaultInstance()) return this;
-      if (!other.ids_.isEmpty()) {
-        if (ids_.isEmpty()) {
-          ids_ = other.ids_;
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          ensureIdsIsMutable();
-          ids_.addAll(other.ids_);
-        }
-        onChanged();
+      if (other.getId() != 0L) {
+        setId(other.getId());
       }
       onChanged();
       return this;
@@ -421,70 +360,29 @@ public  final class UserGRPCRequest extends
       }
       return this;
     }
-    private int bitField0_;
 
-    private java.util.List<java.lang.Long> ids_ = java.util.Collections.emptyList();
-    private void ensureIdsIsMutable() {
-      if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-        ids_ = new java.util.ArrayList<java.lang.Long>(ids_);
-        bitField0_ |= 0x00000001;
-       }
+    private long id_ ;
+    /**
+     * <code>int64 id = 1;</code>
+     */
+    public long getId() {
+      return id_;
     }
     /**
-     * <code>repeated int64 ids = 1;</code>
+     * <code>int64 id = 1;</code>
      */
-    public java.util.List<java.lang.Long>
-        getIdsList() {
-      return java.util.Collections.unmodifiableList(ids_);
-    }
-    /**
-     * <code>repeated int64 ids = 1;</code>
-     */
-    public int getIdsCount() {
-      return ids_.size();
-    }
-    /**
-     * <code>repeated int64 ids = 1;</code>
-     */
-    public long getIds(int index) {
-      return ids_.get(index);
-    }
-    /**
-     * <code>repeated int64 ids = 1;</code>
-     */
-    public Builder setIds(
-        int index, long value) {
-      ensureIdsIsMutable();
-      ids_.set(index, value);
+    public Builder setId(long value) {
+      
+      id_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>repeated int64 ids = 1;</code>
+     * <code>int64 id = 1;</code>
      */
-    public Builder addIds(long value) {
-      ensureIdsIsMutable();
-      ids_.add(value);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated int64 ids = 1;</code>
-     */
-    public Builder addAllIds(
-        java.lang.Iterable<? extends java.lang.Long> values) {
-      ensureIdsIsMutable();
-      com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, ids_);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>repeated int64 ids = 1;</code>
-     */
-    public Builder clearIds() {
-      ids_ = java.util.Collections.emptyList();
-      bitField0_ = (bitField0_ & ~0x00000001);
+    public Builder clearId() {
+      
+      id_ = 0L;
       onChanged();
       return this;
     }

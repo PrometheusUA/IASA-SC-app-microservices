@@ -28,16 +28,28 @@ public final class UserGRPCServiceGrpc {
 
   // Static method descriptors that strictly reflect the proto.
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<ua.kpi.iasa.sc.grpc.UserGRPCRequest,
-      ua.kpi.iasa.sc.grpc.UserGRPCResponse> METHOD_GET_BY_IDS =
-      io.grpc.MethodDescriptor.<ua.kpi.iasa.sc.grpc.UserGRPCRequest, ua.kpi.iasa.sc.grpc.UserGRPCResponse>newBuilder()
+  public static final io.grpc.MethodDescriptor<ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti,
+      ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti> METHOD_GET_BY_IDS =
+      io.grpc.MethodDescriptor.<ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti, ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti>newBuilder()
           .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
           .setFullMethodName(generateFullMethodName(
               "ua.kpi.iasa.sc.grpc.UserGRPCService", "getByIds"))
           .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti.getDefaultInstance()))
+          .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti.getDefaultInstance()))
+          .build();
+  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
+  public static final io.grpc.MethodDescriptor<ua.kpi.iasa.sc.grpc.UserGRPCRequest,
+      ua.kpi.iasa.sc.grpc.UserShortBackDTO> METHOD_GET_BY_ID =
+      io.grpc.MethodDescriptor.<ua.kpi.iasa.sc.grpc.UserGRPCRequest, ua.kpi.iasa.sc.grpc.UserShortBackDTO>newBuilder()
+          .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+          .setFullMethodName(generateFullMethodName(
+              "ua.kpi.iasa.sc.grpc.UserGRPCService", "getById"))
+          .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
               ua.kpi.iasa.sc.grpc.UserGRPCRequest.getDefaultInstance()))
           .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              ua.kpi.iasa.sc.grpc.UserGRPCResponse.getDefaultInstance()))
+              ua.kpi.iasa.sc.grpc.UserShortBackDTO.getDefaultInstance()))
           .build();
 
   /**
@@ -69,9 +81,16 @@ public final class UserGRPCServiceGrpc {
 
     /**
      */
-    public void getByIds(ua.kpi.iasa.sc.grpc.UserGRPCRequest request,
-        io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserGRPCResponse> responseObserver) {
+    public void getByIds(ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti request,
+        io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_GET_BY_IDS, responseObserver);
+    }
+
+    /**
+     */
+    public void getById(ua.kpi.iasa.sc.grpc.UserGRPCRequest request,
+        io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserShortBackDTO> responseObserver) {
+      asyncUnimplementedUnaryCall(METHOD_GET_BY_ID, responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -80,9 +99,16 @@ public final class UserGRPCServiceGrpc {
             METHOD_GET_BY_IDS,
             asyncUnaryCall(
               new MethodHandlers<
-                ua.kpi.iasa.sc.grpc.UserGRPCRequest,
-                ua.kpi.iasa.sc.grpc.UserGRPCResponse>(
+                ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti,
+                ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti>(
                   this, METHODID_GET_BY_IDS)))
+          .addMethod(
+            METHOD_GET_BY_ID,
+            asyncUnaryCall(
+              new MethodHandlers<
+                ua.kpi.iasa.sc.grpc.UserGRPCRequest,
+                ua.kpi.iasa.sc.grpc.UserShortBackDTO>(
+                  this, METHODID_GET_BY_ID)))
           .build();
     }
   }
@@ -107,10 +133,18 @@ public final class UserGRPCServiceGrpc {
 
     /**
      */
-    public void getByIds(ua.kpi.iasa.sc.grpc.UserGRPCRequest request,
-        io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserGRPCResponse> responseObserver) {
+    public void getByIds(ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti request,
+        io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_GET_BY_IDS, getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void getById(ua.kpi.iasa.sc.grpc.UserGRPCRequest request,
+        io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserShortBackDTO> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(METHOD_GET_BY_ID, getCallOptions()), request, responseObserver);
     }
   }
 
@@ -134,9 +168,16 @@ public final class UserGRPCServiceGrpc {
 
     /**
      */
-    public ua.kpi.iasa.sc.grpc.UserGRPCResponse getByIds(ua.kpi.iasa.sc.grpc.UserGRPCRequest request) {
+    public ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti getByIds(ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti request) {
       return blockingUnaryCall(
           getChannel(), METHOD_GET_BY_IDS, getCallOptions(), request);
+    }
+
+    /**
+     */
+    public ua.kpi.iasa.sc.grpc.UserShortBackDTO getById(ua.kpi.iasa.sc.grpc.UserGRPCRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_GET_BY_ID, getCallOptions(), request);
     }
   }
 
@@ -160,14 +201,23 @@ public final class UserGRPCServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<ua.kpi.iasa.sc.grpc.UserGRPCResponse> getByIds(
-        ua.kpi.iasa.sc.grpc.UserGRPCRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti> getByIds(
+        ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_GET_BY_IDS, getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<ua.kpi.iasa.sc.grpc.UserShortBackDTO> getById(
+        ua.kpi.iasa.sc.grpc.UserGRPCRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_GET_BY_ID, getCallOptions()), request);
     }
   }
 
   private static final int METHODID_GET_BY_IDS = 0;
+  private static final int METHODID_GET_BY_ID = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -187,8 +237,12 @@ public final class UserGRPCServiceGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_GET_BY_IDS:
-          serviceImpl.getByIds((ua.kpi.iasa.sc.grpc.UserGRPCRequest) request,
-              (io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserGRPCResponse>) responseObserver);
+          serviceImpl.getByIds((ua.kpi.iasa.sc.grpc.UserGRPCRequestMulti) request,
+              (io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserGRPCResponseMulti>) responseObserver);
+          break;
+        case METHODID_GET_BY_ID:
+          serviceImpl.getById((ua.kpi.iasa.sc.grpc.UserGRPCRequest) request,
+              (io.grpc.stub.StreamObserver<ua.kpi.iasa.sc.grpc.UserShortBackDTO>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -224,6 +278,7 @@ public final class UserGRPCServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new UserGRPCServiceDescriptorSupplier())
               .addMethod(METHOD_GET_BY_IDS)
+              .addMethod(METHOD_GET_BY_ID)
               .build();
         }
       }

@@ -1,8 +1,10 @@
 E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCRequest.java
-E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCResponseOrBuilder.java
+E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCResponseMulti.java
 E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserShort.java
 E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserShortBackDTO.java
+E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCRequestMultiOrBuilder.java
 E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserShortBackDTOOrBuilder.java
 E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCRequestOrBuilder.java
+E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCResponseMultiOrBuilder.java
+E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCRequestMulti.java
 E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\grpc-java\ua\kpi\iasa\sc\grpc\UserGRPCServiceGrpc.java
-E:\_UNIVER\Labs\TRS\identity-grpc\target\generated-sources\protobuf\java\ua\kpi\iasa\sc\grpc\UserGRPCResponse.java

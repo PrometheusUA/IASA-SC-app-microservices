@@ -1,6 +1,8 @@
 package ua.kpi.iasa.sc.complaintsservice.api;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -20,6 +22,7 @@ import ua.kpi.iasa.sc.complaintsservice.api.dto.ComplaintDTO;
 import ua.kpi.iasa.sc.complaintsservice.repository.model.Complaint;
 import ua.kpi.iasa.sc.complaintsservice.security.utility.TokenUtility;
 import ua.kpi.iasa.sc.complaintsservice.service.ComplaintsService;
+import ua.kpi.iasa.sc.grpc.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -48,7 +51,7 @@ public class ComplaintsController {
                                                         @RequestHeader String authorization){
         try{
             List<Complaint> complaints;
-            Map<Integer, JSONObject> users = new HashMap<>();
+            Map<Long, JSONObject> users = new HashMap<>();
             if(processed == null)
                 complaints = complaintService.fetchAll();
             else if (processed) {
@@ -66,42 +69,31 @@ public class ComplaintsController {
                     if(complaint.getProcessedById() != null)
                         idsOfProcessors.add(complaint.getProcessedById());
 
-                HttpPost httppost = new HttpPost(System.getenv("AUTH_URL") + "/identity/byids");
-                httppost.setHeader("User-Agent", "Mozilla/9.0");
-                httppost.setHeader("Authorization", authorization);
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(System.getenv("AUTH_HOST"), Integer.parseInt(System.getenv("AUTH_GRPC_PORT")))
+                        .usePlaintext()
+                        .build();
 
-                StringEntity requestEntity = new StringEntity(
-                        idsOfProcessors.toString(),
-                        ContentType.APPLICATION_JSON);
+                UserGRPCServiceGrpc.UserGRPCServiceBlockingStub stub
+                        = UserGRPCServiceGrpc.newBlockingStub(channel);
 
-                httppost.setEntity(requestEntity);
+                UserGRPCRequestMulti.Builder builder = UserGRPCRequestMulti.newBuilder().addAllIds(idsOfProcessors);
 
-                HttpResponse httpResponse = httpclient.execute(httppost);
-                HttpEntity entity = httpResponse.getEntity();
-                if (entity != null) {
-                    InputStream instream = entity.getContent();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(instream));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
-
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-
-                    JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-                    JSONArray res = (JSONArray) parser.parse(response.toString());
-                    for(int i = 0; i < res.size(); i++){
-                        JSONObject user = (JSONObject) res.get(i);
-                        users.put((Integer) user.get("id"), user);
-                    }
+                UserGRPCResponseMulti usersResponse = stub.getByIds(builder.build());
+                List<UserShortBackDTO> authorsList = usersResponse.getUserList();
+                for(int i = 0; i < authorsList.size(); i++){
+                    UserShortBackDTO user = authorsList.get(i);
+                    Map<String, Object> props = new HashMap<>();
+                    props.put("id", user.getId());
+                    props.put("fullname", user.getFullname());
+                    users.put(user.getId(), new JSONObject(props));
                 }
+                channel.shutdown();
             }
             return ResponseEntity.ok(complaints.stream().map(complaint -> {
-                if(complaint.getProcessedById() == null || !users.containsKey(complaint.getProcessedById().intValue()))
+                if(complaint.getProcessedById() == null || !users.containsKey(complaint.getProcessedById().longValue()))
                     return new ComplaintBackDTO(complaint);
                 else{
-                    return new ComplaintBackDTO(complaint, users.get(complaint.getProcessedById().intValue()));
+                    return new ComplaintBackDTO(complaint, users.get(complaint.getProcessedById().longValue()));
                 }
             }).collect(Collectors.toList()));
         }
@@ -118,27 +110,23 @@ public class ComplaintsController {
             if (complaint.getProcessedById() != null){
                 Long processedById = complaint.getProcessedById();
 
-                HttpGet httpGet = new HttpGet(System.getenv("AUTH_URL") +  "/identity/" + processedById.toString());
-                httpGet.setHeader("User-Agent", "Mozilla/9.0");
-                httpGet.setHeader("Authorization", authorization);
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(System.getenv("AUTH_HOST"), Integer.parseInt(System.getenv("AUTH_GRPC_PORT")))
+                        .usePlaintext()
+                        .build();
 
-                HttpResponse httpResponse = httpclient.execute(httpGet);
-                HttpEntity entity = httpResponse.getEntity();
-                if (entity != null) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(entity.getContent()));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
+                UserGRPCServiceGrpc.UserGRPCServiceBlockingStub stub
+                        = UserGRPCServiceGrpc.newBlockingStub(channel);
 
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
+                UserGRPCRequest.Builder builder = UserGRPCRequest.newBuilder().setId(processedById);
 
-                    //System.out.println(response.toString());
-                    JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-                    JSONObject json = (JSONObject) parser.parse(response.toString());
-                    complaintRes.setProcessedBy(json);
-                }
+                UserShortBackDTO userResponse = stub.getById(builder.build());
+                channel.shutdown();
+
+                Map<String, Object> props = new HashMap<>();
+                props.put("id", userResponse.getId());
+                props.put("fullname", userResponse.getFullname());
+                JSONObject user = new JSONObject(props);
+                complaintRes.setProcessedBy(user);
             }
             return ResponseEntity.ok(complaintRes);
         } catch (Exception e){

@@ -6,11 +6,16 @@ option java_multiple_files = true;
 option java_package = "ua.kpi.iasa.sc.grpc";
 
 service UserGRPCService {
-  rpc getByIds(UserGRPCRequest) returns (UserGRPCResponse);
+  rpc getByIds(UserGRPCRequestMulti) returns (UserGRPCResponseMulti);
+  rpc getById(UserGRPCRequest) returns (UserShortBackDTO);
+}
+
+message UserGRPCRequestMulti {
+  repeated int64 ids = 1;
 }
 
 message UserGRPCRequest {
-  repeated int64 ids = 1;
+  int64 id = 1;
 }
 
 message UserShortBackDTO {
@@ -18,6 +23,6 @@ message UserShortBackDTO {
   string fullname = 2;
 }
 
-message UserGRPCResponse {
+message UserGRPCResponseMulti {
   repeated UserShortBackDTO user = 1;
 }

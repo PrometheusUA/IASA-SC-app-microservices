@@ -8,15 +8,7 @@ public interface UserGRPCRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated int64 ids = 1;</code>
+   * <code>int64 id = 1;</code>
    */
-  java.util.List<java.lang.Long> getIdsList();
-  /**
-   * <code>repeated int64 ids = 1;</code>
-   */
-  int getIdsCount();
-  /**
-   * <code>repeated int64 ids = 1;</code>
-   */
-  long getIds(int index);
+  long getId();
 }

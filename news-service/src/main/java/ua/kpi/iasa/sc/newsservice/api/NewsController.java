@@ -16,10 +16,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ua.kpi.iasa.sc.grpc.UserGRPCRequest;
-import ua.kpi.iasa.sc.grpc.UserGRPCResponse;
-import ua.kpi.iasa.sc.grpc.UserGRPCServiceGrpc;
-import ua.kpi.iasa.sc.grpc.UserShortBackDTO;
+import ua.kpi.iasa.sc.grpc.*;
 import ua.kpi.iasa.sc.newsservice.api.dto.NewsBackDTO;
 import ua.kpi.iasa.sc.newsservice.api.dto.NewsDTO;
 import ua.kpi.iasa.sc.newsservice.repository.model.News;
@@ -69,48 +66,16 @@ public class NewsController {
                 }).collect(Collectors.toList());
             }
 
-//            Map<Integer, JSONObject> authors = new HashMap<>();
-//
-//            HttpPost httppost = new HttpPost(System.getenv("AUTH_URL") + "/identity/byids/unauthorized");
-//            httppost.setHeader("User-Agent", "Mozilla/9.0");
-//
-//            StringEntity requestEntity = new StringEntity(
-//                    idsOfAuthors.toString(),
-//                    ContentType.APPLICATION_JSON);
-//
-//            httppost.setEntity(requestEntity);
-//
-//            HttpResponse httpResponse = httpclient.execute(httppost);
-//            HttpEntity entity = httpResponse.getEntity();
-//            if (entity != null) {
-//                InputStream instream = entity.getContent();
-//                BufferedReader in = new BufferedReader(new InputStreamReader(instream));
-//                String inputLine;
-//                StringBuffer response = new StringBuffer();
-//
-//                while ((inputLine = in.readLine()) != null) {
-//                    response.append(inputLine);
-//                }
-//                in.close();
-//
-//                JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-//                JSONArray res = (JSONArray) parser.parse(response.toString());
-//                for(int i = 0; i < res.size(); i++){
-//                    JSONObject user = (JSONObject) res.get(i);
-//                    authors.put((Integer) user.get("id"), user);
-//                }
-//            }
-
-            ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8083)
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(System.getenv("AUTH_HOST"), Integer.parseInt(System.getenv("AUTH_GRPC_PORT")))
                     .usePlaintext()
                     .build();
 
             UserGRPCServiceGrpc.UserGRPCServiceBlockingStub stub
                     = UserGRPCServiceGrpc.newBlockingStub(channel);
 
-            UserGRPCRequest.Builder builder = UserGRPCRequest.newBuilder().addAllIds(idsOfAuthors);
+            UserGRPCRequestMulti.Builder builder = UserGRPCRequestMulti.newBuilder().addAllIds(idsOfAuthors);
 
-            UserGRPCResponse usersResponse = stub.getByIds(builder.build());
+            UserGRPCResponseMulti usersResponse = stub.getByIds(builder.build());
             Map<Long, JSONObject> authors = new HashMap<>();
             List<UserShortBackDTO> authorsList = usersResponse.getUserList();
             for(int i = 0; i < authorsList.size(); i++){
@@ -140,37 +105,23 @@ public class NewsController {
         try {
             final News foundNews = newsService.fetchById(id);
             if(foundNews.getCreatedBy() != null){
-                HttpPost httppost = new HttpPost(System.getenv("AUTH_URL") + "/identity/byids/unauthorized");
-                httppost.setHeader("User-Agent", "Mozilla/9.0");
+                ManagedChannel channel = ManagedChannelBuilder.forAddress(System.getenv("AUTH_HOST"), Integer.parseInt(System.getenv("AUTH_GRPC_PORT")))
+                        .usePlaintext()
+                        .build();
 
-                StringEntity requestEntity = new StringEntity(
-                        "["+foundNews.getCreatedBy()+"]",
-                        ContentType.APPLICATION_JSON);
+                UserGRPCServiceGrpc.UserGRPCServiceBlockingStub stub
+                        = UserGRPCServiceGrpc.newBlockingStub(channel);
 
-                httppost.setEntity(requestEntity);
+                UserGRPCRequest.Builder builder = UserGRPCRequest.newBuilder().setId(foundNews.getCreatedBy());
 
-                HttpResponse httpResponse = httpclient.execute(httppost);
-                HttpEntity entity = httpResponse.getEntity();
-                if (entity != null) {
-                    InputStream instream = entity.getContent();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(instream));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
+                UserShortBackDTO userResponse = stub.getById(builder.build());
+                channel.shutdown();
 
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-
-                    JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-                    JSONArray res = (JSONArray) parser.parse(response.toString());
-                    JSONObject author = (JSONObject) res.get(0);
-//                    UserShortBackDTO authorBack = UserShortBackDTO.newBuilder()
-//                            .setId((long) author.get("id"))
-//                            .setFullname(author.getAsString("fullname"))
-//                            .build();
-                    return ResponseEntity.ok(new NewsBackDTO(foundNews, author));
-                }
+                Map<String, Object> props = new HashMap<>();
+                props.put("id", userResponse.getId());
+                props.put("fullname", userResponse.getFullname());
+                JSONObject author = new JSONObject(props);
+                return ResponseEntity.ok(new NewsBackDTO(foundNews, author));
             }
             return ResponseEntity.ok(new NewsBackDTO(foundNews));
         } catch (IllegalArgumentException e) {
