@@ -15,10 +15,12 @@ spec:
       containers:
         - name: identity-service
           image: prometheusua/identity-service:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
+            - name: grpc
+              containerPort: 8083
           env:
             - name: POSTGRESQL_FULLHOST
               value: postgres-identity
@@ -58,3 +60,6 @@ spec:
     - name: http
       port: 8080
       nodePort: 31000
+    - name: grpc
+      port: 8083
+      nodePort: 31003

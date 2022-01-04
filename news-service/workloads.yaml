@@ -30,6 +30,7 @@ spec:
       containers:
         - name: server
           image: prometheusua/news-service:latest
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8082
